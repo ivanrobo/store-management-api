@@ -2,7 +2,6 @@ package ro.robert.store.management.product.boundary;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ro.robert.store.management.annotation.TrackExecutionTime;
 import ro.robert.store.management.product.entity.request.ProductCreateRequest;
 import ro.robert.store.management.product.entity.request.ProductUpdateRequest;
 import ro.robert.store.management.product.entity.response.ProductPagedResponse;
@@ -24,12 +24,14 @@ public class ProductController {
     private final ProductService productService;
     
     @PostMapping
+    @TrackExecutionTime("Create Product")
     public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest request) {
         ProductResponse response = productService.createProduct(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     
     @GetMapping
+    @TrackExecutionTime("Get All Products")
     public ResponseEntity<ProductPagedResponse> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -47,12 +49,14 @@ public class ProductController {
     }
     
     @GetMapping("/{id}")
+    @TrackExecutionTime("Get Product By ID")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         ProductResponse product = productService.getProductById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
     
     @PatchMapping("/{id}")
+    @TrackExecutionTime("Update Product")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id, 
             @Valid @RequestBody ProductUpdateRequest request) {
@@ -61,6 +65,7 @@ public class ProductController {
     }
     
     @DeleteMapping("/{id}")
+    @TrackExecutionTime("Delete Product")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
