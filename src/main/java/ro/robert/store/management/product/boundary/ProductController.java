@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ro.robert.store.management.product.entity.request.ProductCreateRequest;
 import ro.robert.store.management.product.entity.request.ProductUpdateRequest;
+import ro.robert.store.management.product.entity.response.ProductPagedResponse;
 import ro.robert.store.management.product.entity.response.ProductResponse;
 import ro.robert.store.management.product.control.ProductService;
 
@@ -29,7 +30,7 @@ public class ProductController {
     }
     
     @GetMapping
-    public ResponseEntity<Page<ProductResponse>> getAllProducts(
+    public ResponseEntity<ProductPagedResponse> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortBy,
@@ -41,7 +42,7 @@ public class ProductController {
         }
         
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<ProductResponse> products = productService.getAllProducts(pageable);
+        ProductPagedResponse products = productService.getAllProducts(pageable);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
     

@@ -15,7 +15,10 @@ import ro.robert.store.management.product.entity.request.ProductCreateRequest;
 import ro.robert.store.management.product.entity.request.ProductUpdateRequest;
 import ro.robert.store.management.product.entity.request.UpdatePriceRequest;
 import ro.robert.store.management.product.entity.request.UpdateStockRequest;
+import ro.robert.store.management.product.entity.response.ProductPagedResponse;
 import ro.robert.store.management.product.entity.response.ProductResponse;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -37,7 +40,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+    public ProductPagedResponse getAllProducts(Pageable pageable) {
         log.info("Retrieving products - Page: {}, Size: {}, Sort: {}", 
                 pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
         
@@ -46,7 +49,22 @@ public class ProductService {
         log.info("Retrieved {} products out of {} total products", 
                 entityPage.getNumberOfElements(), entityPage.getTotalElements());
         
-        return entityPage.map(productMapper::toResponse);
+        List<ProductResponse> content = entityPage.getContent()
+                .stream()
+                .map(productMapper::toResponse)
+                .toList();
+        
+        return new ProductPagedResponse(
+                content,
+                entityPage.getNumber(),
+                entityPage.getSize(),
+                entityPage.getTotalElements(),
+                entityPage.getTotalPages(),
+                entityPage.isFirst(),
+                entityPage.isLast(),
+                entityPage.getNumberOfElements(),
+                entityPage.isEmpty()
+        );
     }
     
     @Transactional(readOnly = true)
