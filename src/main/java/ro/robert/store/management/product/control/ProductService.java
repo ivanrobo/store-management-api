@@ -8,6 +8,8 @@ import ro.robert.store.management.product.boundary.ProductRepository;
 import ro.robert.store.management.product.entity.ProductCreateRequest;
 import ro.robert.store.management.product.entity.ProductEntity;
 import ro.robert.store.management.product.entity.ProductResponse;
+import ro.robert.store.management.product.exception.ProductErrorType;
+import ro.robert.store.management.product.exception.ProductServiceException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,5 +27,11 @@ public class ProductService {
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
         Page<ProductEntity> entityPage = productRepository.findAll(pageable);
         return entityPage.map(productMapper::toResponse);
+    }
+    
+    public ProductResponse getProductById(Long id) {
+        ProductEntity entity = productRepository.findById(id)
+                .orElseThrow(() -> new ProductServiceException(ProductErrorType.PRODUCT_NOT_FOUND, id));
+        return productMapper.toResponse(entity);
     }
 }
