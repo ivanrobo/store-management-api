@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
  */
 public enum ServiceErrorType {
     
-    PRODUCT_NOT_FOUND("PRODUCT_NOT_FOUND", "Product not found with id: %d", HttpStatus.NOT_FOUND);
+    PRODUCT_NOT_FOUND("PRODUCT_NOT_FOUND", "Product not found with id: %d", HttpStatus.NOT_FOUND),
+    UNSUPPORTED_UPDATE_TYPE("UNSUPPORTED_UPDATE_TYPE", "Unsupported update request type: %s", HttpStatus.BAD_REQUEST);
     
     private final String errorCode;
     private final String messageTemplate;
