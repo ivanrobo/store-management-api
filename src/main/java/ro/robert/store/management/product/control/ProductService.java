@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ro.robert.store.management.exception.entity.ServiceErrorType;
 import ro.robert.store.management.exception.entity.ServiceException;
@@ -22,23 +23,27 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
+    @Transactional
     public ProductResponse createProduct(ProductCreateRequest request) {
         ProductEntity entity = productMapper.toEntity(request);
         ProductEntity savedEntity = productRepository.save(entity);
         return productMapper.toResponse(savedEntity);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
         Page<ProductEntity> entityPage = productRepository.findAll(pageable);
         return entityPage.map(productMapper::toResponse);
     }
     
+    @Transactional(readOnly = true)
     public ProductResponse getProductById(Long id) {
         ProductEntity entity = productRepository.findById(id)
                 .orElseThrow(() -> new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id));
         return productMapper.toResponse(entity);
     }
     
+    @Transactional
     public ProductResponse updateProduct(Long id, ProductUpdateRequest request) {
         ProductEntity entity = productRepository.findById(id)
                 .orElseThrow(() -> new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id));
