@@ -1,6 +1,8 @@
 package ro.robert.store.management.product.control;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.robert.store.management.product.boundary.ProductRepository;
 import ro.robert.store.management.product.entity.ProductCreateRequest;
@@ -18,5 +20,10 @@ public class ProductService {
         ProductEntity entity = productMapper.toEntity(request);
         ProductEntity savedEntity = productRepository.save(entity);
         return productMapper.toResponse(savedEntity);
+    }
+
+    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+        Page<ProductEntity> entityPage = productRepository.findAll(pageable);
+        return entityPage.map(productMapper::toResponse);
     }
 }
