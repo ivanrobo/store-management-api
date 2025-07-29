@@ -54,6 +54,14 @@ public class ProductService {
         return productMapper.toResponse(savedEntity);
     }
     
+    @Transactional
+    public void deleteProduct(Long id) {
+        ProductEntity entity = productRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id));
+        
+        productRepository.delete(entity);
+    }
+    
     /**
      * Applies the appropriate update to the product entity based on the request type.
      *
