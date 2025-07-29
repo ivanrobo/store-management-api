@@ -3,8 +3,8 @@ package ro.robert.store.management.product.control;
 import org.springframework.stereotype.Component;
 
 import ro.robert.store.management.product.entity.ProductEntity;
-import ro.robert.store.management.product.entity.ProductResponse;
-import ro.robert.store.management.product.entity.ProductCreateRequest;
+import ro.robert.store.management.product.entity.request.ProductCreateRequest;
+import ro.robert.store.management.product.entity.response.ProductResponse;
 
 @Component
 public class ProductMapper {
