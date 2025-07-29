@@ -1,14 +1,14 @@
-package ro.robert.store.management.product.exception;
+package ro.robert.store.management.exception.entity;
 
 import org.springframework.http.HttpStatus;
 
 /**
- * Custom runtime exception for Product Service operations.
- * Uses ProductErrorType enum to define error characteristics.
+ * Custom runtime exception for Store Management Service operations.
+ * Uses ServiceErrorType enum to define error characteristics.
  */
-public class ProductServiceException extends RuntimeException {
+public class ServiceException extends RuntimeException {
     
-    private final ProductErrorType errorType;
+    private final ServiceErrorType errorType;
     private final Throwable rootCause;
     
     /**
@@ -18,7 +18,7 @@ public class ProductServiceException extends RuntimeException {
      * @param cause the underlying exception that caused this exception (optional)
      * @param messageArgs arguments to format the error message template
      */
-    public ProductServiceException(ProductErrorType errorType, Throwable cause, Object... messageArgs) {
+    public ServiceException(ServiceErrorType errorType, Throwable cause, Object... messageArgs) {
         super(errorType.formatMessage(messageArgs), cause);
         this.errorType = errorType;
         this.rootCause = cause;
@@ -30,7 +30,7 @@ public class ProductServiceException extends RuntimeException {
      * @param errorType the error type containing error code, message, and status code
      * @param messageArgs arguments to format the error message template
      */
-    public ProductServiceException(ProductErrorType errorType, Object... messageArgs) {
+    public ServiceException(ServiceErrorType errorType, Object... messageArgs) {
         this(errorType, null, messageArgs);
     }
     
@@ -39,7 +39,7 @@ public class ProductServiceException extends RuntimeException {
      *
      * @return the error type
      */
-    public ProductErrorType getErrorType() {
+    public ServiceErrorType getErrorType() {
         return errorType;
     }
     
