@@ -1,12 +1,12 @@
-package ro.robert.store.management.product.exception;
+package ro.robert.store.management.exception.entity;
 
 import org.springframework.http.HttpStatus;
 
 /**
- * Enum containing error types for Product Service operations.
+ * Enum containing error types for Store Management Service operations.
  * Each error type defines its custom error code, message template, and HTTP status code.
  */
-public enum ProductErrorType {
+public enum ServiceErrorType {
     
     PRODUCT_NOT_FOUND("PRODUCT_NOT_FOUND", "Product not found with id: %d", HttpStatus.NOT_FOUND);
     
@@ -15,13 +15,13 @@ public enum ProductErrorType {
     private final HttpStatus statusCode;
     
     /**
-     * Constructor for ProductErrorType enum.
+     * Constructor for ServiceErrorType enum.
      *
      * @param errorCode the custom error code
      * @param messageTemplate the message template (can contain placeholders)
      * @param statusCode the HTTP status code
      */
-    ProductErrorType(String errorCode, String messageTemplate, HttpStatus statusCode) {
+    ServiceErrorType(String errorCode, String messageTemplate, HttpStatus statusCode) {
         this.errorCode = errorCode;
         this.messageTemplate = messageTemplate;
         this.statusCode = statusCode;
