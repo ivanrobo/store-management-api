@@ -1,4 +1,4 @@
-package ro.robert.store.management.product.entity;
+package ro.robert.store.management.product.entity.response;
 
 import lombok.Data;
 

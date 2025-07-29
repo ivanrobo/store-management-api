@@ -1,4 +1,4 @@
-package ro.robert.store.management.product.entity;
+package ro.robert.store.management.product.entity.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
