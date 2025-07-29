@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 import ro.robert.store.management.exception.entity.ServiceErrorType;
 import ro.robert.store.management.exception.entity.ServiceException;
 import ro.robert.store.management.product.boundary.ProductRepository;
-import ro.robert.store.management.product.entity.ProductCreateRequest;
 import ro.robert.store.management.product.entity.ProductEntity;
-import ro.robert.store.management.product.entity.ProductResponse;
+import ro.robert.store.management.product.entity.request.ProductCreateRequest;
+import ro.robert.store.management.product.entity.request.ProductUpdateRequest;
+import ro.robert.store.management.product.entity.request.UpdatePriceRequest;
+import ro.robert.store.management.product.entity.request.UpdateStockRequest;
+import ro.robert.store.management.product.entity.response.ProductResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +37,31 @@ public class ProductService {
         ProductEntity entity = productRepository.findById(id)
                 .orElseThrow(() -> new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id));
         return productMapper.toResponse(entity);
+    }
+    
+    public ProductResponse updateProduct(Long id, ProductUpdateRequest request) {
+        ProductEntity entity = productRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id));
+        
+        applyUpdate(entity, request);
+        
+        ProductEntity savedEntity = productRepository.save(entity);
+        return productMapper.toResponse(savedEntity);
+    }
+    
+    /**
+     * Applies the appropriate update to the product entity based on the request type.
+     *
+     * @param entity the product entity to update
+     * @param request the update request
+     */
+    private void applyUpdate(ProductEntity entity, ProductUpdateRequest request) {
+        if (request instanceof UpdatePriceRequest priceRequest) {
+            entity.setPrice(priceRequest.getPrice());
+        } else if (request instanceof UpdateStockRequest stockRequest) {
+            entity.setQuantity(stockRequest.getQuantity());
+        } else {
+            throw new ServiceException(ServiceErrorType.UNSUPPORTED_UPDATE_TYPE, request.getType());
+        }
     }
 }
