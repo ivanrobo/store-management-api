@@ -69,4 +69,17 @@ public class ServiceException extends RuntimeException {
     public Throwable getRootCause() {
         return rootCause;
     }
+    
+    /**
+     * Creates a ServiceErrorResponse from this exception.
+     *
+     * @return the error response
+     */
+    public ServiceErrorResponse getErrorResponse() {
+        return new ServiceErrorResponse(
+            getErrorCode(),
+            getMessage(),
+            System.currentTimeMillis()
+        );
+    }
 }
