@@ -9,8 +9,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ro.robert.store.management.product.entity.ProductCreateRequest;
-import ro.robert.store.management.product.entity.ProductResponse;
+
+import ro.robert.store.management.product.entity.request.ProductCreateRequest;
+import ro.robert.store.management.product.entity.request.ProductUpdateRequest;
+import ro.robert.store.management.product.entity.response.ProductResponse;
 import ro.robert.store.management.product.control.ProductService;
 
 @RestController
@@ -47,5 +49,13 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         ProductResponse product = productService.getProductById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+    
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable Long id, 
+            @Valid @RequestBody ProductUpdateRequest request) {
+        ProductResponse response = productService.updateProduct(id, request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
