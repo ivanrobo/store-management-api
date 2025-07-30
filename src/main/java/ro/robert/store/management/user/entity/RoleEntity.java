@@ -34,10 +34,6 @@ public class RoleEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "roles")
-    @Builder.Default
-    private Set<UserEntity> users = new HashSet<>();
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
