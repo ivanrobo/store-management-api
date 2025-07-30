@@ -34,7 +34,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ServiceErrorResponse> handleServiceException(ServiceException ex) {
-        log.error("Service exception occurred: {}", ex.getMessage(), ex);
+        // Log at WARN level with message, stack trace only in debug mode
+        log.warn("Service exception occurred: {} (Error Code: {})", ex.getMessage(), ex.getErrorCode());
+        if (log.isDebugEnabled()) {
+            log.debug("Service exception stack trace:", ex);
+        }
         return new ResponseEntity<>(ex.getErrorResponse(), ex.getStatusCode());
     }
 
@@ -43,7 +47,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ServiceErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
-        log.error("Validation error occurred: {}", ex.getMessage());
+        log.warn("Validation error occurred: Invalid request data");
+        if (log.isDebugEnabled()) {
+            log.debug("Validation exception details:", ex);
+        }
         
         Map<String, String> fieldErrors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -67,7 +74,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ServiceErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        log.error("Constraint violation occurred: {}", ex.getMessage());
+        log.warn("Constraint violation occurred: {}", ex.getMessage());
+        if (log.isDebugEnabled()) {
+            log.debug("Constraint violation stack trace:", ex);
+        }
         
         String errorMessage = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
@@ -82,14 +92,17 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ServiceErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        log.error("Data integrity violation occurred: {}", ex.getMessage(), ex);
+        log.warn("Data integrity violation occurred: {}", ex.getMessage());
+        if (log.isDebugEnabled()) {
+            log.debug("Data integrity violation stack trace:", ex);
+        }
         
         ServiceException serviceException = new ServiceException(ServiceErrorType.DATABASE_CONSTRAINT_VIOLATION);
         return new ResponseEntity<>(serviceException.getErrorResponse(), serviceException.getStatusCode());
     }
 
     /**
-     * Handle SQL exceptions - keep it simple and general.
+     * Handle SQL exceptions
      */
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<ServiceErrorResponse> handleSQLException(SQLException ex) {
@@ -113,7 +126,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ServiceErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.error("Malformed JSON request: {}", ex.getMessage());
+        log.warn("Malformed JSON request: {}", ex.getMessage());
+        if (log.isDebugEnabled()) {
+            log.debug("Malformed JSON stack trace:", ex);
+        }
         
         String errorMessage = "Invalid JSON format or missing required fields";
         if (ex.getCause() != null && ex.getCause().getMessage() != null) {
