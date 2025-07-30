@@ -12,6 +12,7 @@ import ro.robert.store.management.user.boundary.UserRepository;
 import ro.robert.store.management.user.entity.RoleEntity;
 import ro.robert.store.management.user.entity.UserEntity;
 import ro.robert.store.management.user.entity.request.UserCreateRequest;
+import ro.robert.store.management.user.entity.request.AssignRoleRequest;
 import ro.robert.store.management.user.entity.response.UserResponse;
 
 import java.util.Set;
@@ -57,5 +58,37 @@ public class UserService {
         log.info("Successfully created user with ID: {} and username: {} with USER role", 
             savedEntity.getId(), savedEntity.getUsername());
         return userMapper.toResponse(savedEntity);
+    }
+    
+    @Transactional
+    public UserResponse assignRole(AssignRoleRequest request) {
+        log.info("Assigning role {} to user ID: {}", request.getRoleName(), request.getUserId());
+        
+        UserEntity user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> {
+                log.warn("User not found with ID: {}", request.getUserId());
+                return new ServiceException(ServiceErrorType.VALIDATION_ERROR, 
+                    "User not found with ID: " + request.getUserId());
+            });
+        
+        RoleEntity role = roleRepository.findByName(request.getRoleName())
+            .orElseThrow(() -> {
+                log.warn("Role not found: {}", request.getRoleName());
+                return new ServiceException(ServiceErrorType.VALIDATION_ERROR, 
+                    "Role not found: " + request.getRoleName());
+            });
+        
+        if (user.getRoles().contains(role)) {
+            log.info("User {} already has role {}", user.getUsername(), request.getRoleName());
+            throw new ServiceException(ServiceErrorType.VALIDATION_ERROR, 
+                "User already has role: " + request.getRoleName());
+        }
+        
+        user.getRoles().add(role);
+        UserEntity savedUser = userRepository.save(user);
+        
+        log.info("Successfully assigned role {} to user {}", 
+            request.getRoleName(), savedUser.getUsername());
+        return userMapper.toResponse(savedUser);
     }
 }
