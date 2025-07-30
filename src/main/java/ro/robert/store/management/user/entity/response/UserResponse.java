@@ -1,10 +1,9 @@
 package ro.robert.store.management.user.entity.response;
 
 import lombok.Data;
-import ro.robert.store.management.user.entity.RoleEntity;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class UserResponse {
@@ -14,5 +13,5 @@ public class UserResponse {
     private Boolean enabled;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Set<RoleEntity> roles;
+    private List<String> roles;
 }

@@ -1,9 +1,13 @@
 package ro.robert.store.management.user.control;
 
 import org.springframework.stereotype.Component;
+import ro.robert.store.management.user.entity.RoleEntity;
 import ro.robert.store.management.user.entity.UserEntity;
 import ro.robert.store.management.user.entity.request.UserCreateRequest;
 import ro.robert.store.management.user.entity.response.UserResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -25,7 +29,14 @@ public class UserMapper {
         response.setEnabled(entity.getEnabled());
         response.setCreatedAt(entity.getCreatedAt());
         response.setUpdatedAt(entity.getUpdatedAt());
-        response.setRoles(entity.getRoles());
+        response.setRoles(extractRoleNames(entity));
+        
         return response;
+    }
+    
+    private List<String> extractRoleNames(UserEntity entity) {
+        return entity.getRoles().stream()
+                .map(RoleEntity::getName)
+                .collect(Collectors.toList());
     }
 }
