@@ -34,7 +34,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ServiceErrorResponse> handleServiceException(ServiceException ex) {
-        // Log at WARN level with message, stack trace only in debug mode
         log.warn("Service exception occurred: {} (Error Code: {})", ex.getMessage(), ex.getErrorCode());
         if (log.isDebugEnabled()) {
             log.debug("Service exception stack trace:", ex);
