@@ -27,6 +27,7 @@ public class ProductService {
     
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ProductEventPublisher productEventPublisher;
 
     @Transactional
     public ProductResponse createProduct(ProductCreateRequest request) {
@@ -36,6 +37,9 @@ public class ProductService {
         ProductEntity savedEntity = productRepository.save(entity);
         
         log.info("Successfully created product with ID: {} and name: {}", savedEntity.getId(), savedEntity.getName());
+        
+        productEventPublisher.publishEvent(productMapper.toCreatedEvent(savedEntity));
+        
         return productMapper.toResponse(savedEntity);
     }
 
@@ -91,10 +95,18 @@ public class ProductService {
                     return new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id);
                 });
         
+        String oldValue = getFieldValue(entity, request);
+        
         applyUpdate(entity, request);
         
         ProductEntity savedEntity = productRepository.save(entity);
         log.info("Successfully updated product: {} with ID: {}", savedEntity.getName(), id);
+        
+        String newValue = getFieldValue(savedEntity, request);
+        String fieldName = getFieldName(request);
+        productEventPublisher.publishEvent(
+            productMapper.toUpdatedEvent(savedEntity, fieldName, oldValue, newValue)
+        );
         
         return productMapper.toResponse(savedEntity);
     }
@@ -109,8 +121,36 @@ public class ProductService {
                     return new ServiceException(ServiceErrorType.PRODUCT_NOT_FOUND, id);
                 });
         
+        productEventPublisher.publishEvent(
+            productMapper.toDeletedEvent(entity)
+        );
+        
         productRepository.delete(entity);
         log.info("Successfully deleted product with ID: {}", id);
+    }
+    
+    /**
+     * Gets the field name being updated based on the request type
+     */
+    private String getFieldName(ProductUpdateRequest request) {
+        if (request instanceof UpdatePriceRequest) {
+            return "PRICE";
+        } else if (request instanceof UpdateStockRequest) {
+            return "QUANTITY";
+        }
+        return "UNKNOWN";
+    }
+    
+    /**
+     * Gets the current value of the field being updated
+     */
+    private String getFieldValue(ProductEntity entity, ProductUpdateRequest request) {
+        if (request instanceof UpdatePriceRequest) {
+            return entity.getPrice().toString();
+        } else if (request instanceof UpdateStockRequest) {
+            return entity.getQuantity().toString();
+        }
+        return "UNKNOWN";
     }
     
     /**
