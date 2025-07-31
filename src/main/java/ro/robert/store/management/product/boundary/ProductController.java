@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +38,10 @@ public class ProductController {
         @ApiResponse(responseCode = "201", description = "Product created successfully",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class)))
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Authentication required"),
     })
+    @SecurityRequirement(name = "basicAuth")
     @PostMapping
     @TrackExecutionTime("Create Product")
     public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest request) {
@@ -96,8 +99,10 @@ public class ProductController {
         @ApiResponse(responseCode = "404", description = "Product not found",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class)))
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Authentication required"),
     })
+    @SecurityRequirement(name = "basicAuth")
     @PatchMapping("/{id}")
     @TrackExecutionTime("Update Product")
     public ResponseEntity<ProductResponse> updateProduct(
@@ -112,8 +117,10 @@ public class ProductController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Product not found",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class)))
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServiceErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Authentication required"),
     })
+    @SecurityRequirement(name = "basicAuth")
     @DeleteMapping("/{id}")
     @TrackExecutionTime("Delete Product")
     public ResponseEntity<Void> deleteProduct(
